@@ -37,12 +37,12 @@ def course_dict(url):
 	for element in course_accordion.find_all('div'):
 		x = element.find(class_="accordion-title__title")
 		if x :
-			course_parent = str(x.get_text())
+			course_parent = str(x.get_text()).replace('/','-')
 		else :
 			child_list = []
 			for child in element.find_all(class_="accordion-content__row") :
 				title = child.find(class_="accordion-content__row__title").get_text()
-				child_list.append(str(title))
+				child_list.append(str(title).replace('/','-'))
 
 				course_dict[course_parent] = child_list
 	
@@ -69,15 +69,23 @@ def main(argv):
 		file_list = natsorted(file_list)
 
 		i = 0
+		number = 1
+		
 		for chapter, lessons in course.items():
-			chapter_dir = os.path.join(output_path, str(chapter))
+			chapter_dir = os.path.join(output_path, str(number) + '. ' +str(chapter))
 
 			os.mkdir( chapter_dir, mode=0o755 );
 
-			for lesson in lessons :
-				shutil.copy2(os.path.join(input_path, file_list[i]), os.path.join(chapter_dir, lesson + ".mp4"))
+			sub_number = 1
 
+			for lesson in lessons :
+				filename = str(number) + "." + str(sub_number) + ". " +  lesson + ".mp4"
+				shutil.copy2(os.path.join(input_path, file_list[i]), os.path.join(chapter_dir, filename))
+				
 				i += 1
+				sub_number += 1
+
+			number += 1
 
 		print("Done.....")
 
